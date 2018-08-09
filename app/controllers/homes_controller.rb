@@ -13,6 +13,6 @@ class HomesController < ApplicationController
                                 site: params[:site],
                                 token_url: OAUTHU_URL)
     token = client.client_credentials.get_token
-    render json: token.get("/v1/data?accounts=#{account_id}&dimensions=#{dimensions}&fields=#{fields}&sort=date&limit=all").body
+    render json: token.get("/v1/data?accounts=#{account_id}&dimensions=#{dimensions}&fields=#{fields}#{'&sort=date&limit=all' if params[:dimensions].first == 'date'}").body
   end
 end
