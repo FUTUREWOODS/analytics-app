@@ -2,7 +2,7 @@
   "name": "analytics-app",
   "private": true,
   "dependencies": {
-    "@rails/webpacker": "^3.5.5"
+    "@rails/webpacker": "3.5"
   },
   "version": "1.0.0",
   "main": "index.js",
@@ -10,6 +10,6 @@
   "author": "MakotoInomata <inomata@futurewoods.co.jp>",
   "license": "MIT",
   "devDependencies": {
-    "webpack-dev-server": "^3.1.5"
+    "webpack-dev-server": "2.11.2"
   }
 }
