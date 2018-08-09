@@ -48,7 +48,4 @@ test:
 #     url: <%= ENV['DATABASE_URL'] %>
 #
 production:
-  <<: *default
-  database: analytics-app_production
-  username: analytics-app
-  password: <%= ENV['ANALYTICS-APP_DATABASE_PASSWORD'] %>
+  url: <%= ENV['DATABASE_URL'] %
