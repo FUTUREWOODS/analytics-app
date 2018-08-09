@@ -1,0 +1,43 @@
+<%= form_with url: homes_path, method: :post, id: 'bright_cove_api' do |form| %>
+<div class="sidebar-sticky">
+  <ul class="nav flex-column">
+    <li class="nav-item">
+      <div class="input-group mb-2">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Account Id</span>
+        </div>
+        <%= form.text_field :account_id, value: ENV['ACCOUNT_ID'], class: 'form-control' %>
+      </div>
+    </li>
+    <li class="nav-item">
+      <div class="input-group mb-2">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Clinet Id</span>
+        </div>
+        <%= form.text_field :client_id, value: ENV['CLIENT_ID'], class: 'form-control' %>
+      </div>
+    </li>
+    <li class="nav-item">
+      <div class="input-group mb-2">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Clinet Secret</span>
+        </div>
+        <%= form.text_field :client_secret, value: ENV['CLIENT_SECRET'], class: 'form-control' %>
+      </div>
+    </li>
+  </ul>
+</div>
+<%= select_tag 'site', options_for_select({'analytics API': 'https://analytics.api.brightcove.com/v1'}), class: 'form-control mb-2' %>
+<div class="mb-2">
+  <% fields = %w[account browser_type city country date date_hour destination_domain destination_path device_os device_manufacturer device_type live_stream player referrer_domain region search_terms social_platform source_type video] %>
+  <% fields.each.with_index do |field, index| %>
+    <div class="form-check">
+      <%= check_box_tag 'dimensions[]', field, false, id: "field_#{index}", class: 'form-check-input' %>
+      <label class="form-check-label" for="<%= "field_#{index}" %>">
+        <%= field %>
+      </label>
+    </div>
+  <% end %>
+</div>
+  <%= form.submit '送信', class: 'btn btn-primary' %>
+<% end %>
