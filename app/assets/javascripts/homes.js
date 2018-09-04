@@ -1,6 +1,23 @@
 $(document).on("ajax:success", "#bright_cove_api", function(e) {
-  var result = e.detail[0]
-  $('.result').html(`<div class="alert alert-secondary" style="word-wrap: break-word;"> <pre>${JSON.stringify(result, null, "\t")}</pre></div>`)
+    var result = e.detail[0]
+    $('.result').html(`<div class="alert alert-secondary" style="word-wrap: break-word;"> <pre>${JSON.stringify(result, null, "\t")}</pre></div>`)
+    if (result['format'] == 'single') {
+        var data = []
+        result.items.forEach(r => {
+            var view = r.items.map(i => { return i['video_view'] })
+            data.push({ name: `video: ${r.video}` , data: view })
+            // console.log(view)
+        })
+        chart2('single', result.date, data)
+    } else {
+        all(result)
+    }
+});
+$(document).on("ajax:error", "#bright_cove_api", function(e) {
+    $('.result').html(`<div class="alert alert-danger" style="word-wrap: break-word;">エラー</div>`)
+});
+
+function all (result) {
     var data = result.items.map((item) => {
         return item['video_view']
     })
@@ -8,10 +25,7 @@ $(document).on("ajax:success", "#bright_cove_api", function(e) {
         return item['date']
     })
     chart('total_video_view',cat,data)
-});
-$(document).on("ajax:error", "#bright_cove_api", function(e) {
-    $('.result').html(`<div class="alert alert-danger" style="word-wrap: break-word;">エラー</div>`)
-});
+}
 
 function chart (title, cat, data) {
     var myChart = Highcharts.chart('container', {
@@ -21,7 +35,7 @@ function chart (title, cat, data) {
             }
         },
         xAxis: {
-          categories: cat,
+            categories: cat,
         },
         plotOptions: {
             series: {
@@ -32,6 +46,28 @@ function chart (title, cat, data) {
             name: title,
             data: data,
         }],
+        title: {
+            text: title,
+        }
+    });
+}
+
+function chart2 (title, cat, data) {
+    var myChart = Highcharts.chart('container', {
+        yAxis: {
+            title:{
+                text: 'views',
+            }
+        },
+        xAxis: {
+            categories: cat,
+        },
+        plotOptions: {
+            series: {
+                allowPointSelect: true
+            },
+        },
+        series: data,
         title: {
             text: title,
         }

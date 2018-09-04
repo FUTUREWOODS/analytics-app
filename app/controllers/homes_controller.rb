@@ -1,18 +1,60 @@
-class HomesController < ApplicationController
-  OAUTHU_URL = 'https://oauth.brightcove.com/v4/access_token'
+require 'json'
 
+class HomesController < ApplicationController
+  # "/v1/data?accounts=#{account_id}&dimensions=#{dimensions}&fields=#{fields}&sort=-video_view#{'&sort=date&limit=all' if params[:dimensions].first == 'date'}"
   def new
   end
 
   def create
-    yaml = YAML.load_file("config/fields.yml")
-    account_id = params[:account_id]
-    dimensions = params[:dimensions].join(',')
-    fields = yaml[params[:dimensions].first].join(',')
-    client = OAuth2::Client.new(params[:client_id], params[:client_secret],
-                                site: params[:site],
-                                token_url: OAUTHU_URL)
-    token = client.client_credentials.get_token
-    render json: token.get("/v1/data?accounts=#{account_id}&dimensions=#{dimensions}&fields=#{fields}#{'&sort=date&limit=all' if params[:dimensions].first == 'date'}").body
+    body = BrightCove.new(set_params)
+    case params[:format]
+    when 'all'
+      body = JSON.parse(body.all_view)
+      body[:format] = 'all'
+      render json: body.to_json
+    when 'single'
+      body = JSON.parse(body.single)
+      videos = body['items'].map { |item| item['video'] }
+      body = BrightCove.new(set_params)
+      results = []
+
+      span = (Date.parse(params[:start_date])..Date.parse(params[:end_date])).to_a
+      videos.each do |video|
+        items = JSON.parse(body.video(video))['items'].map {|item| item.symbolize_keys}
+        date = items.map {|item| item[:date]}
+        span.each do |d|
+          items << { "date": d.to_s, "video_view": 0, "video": video } unless date.include?(d.to_s)
+        end
+        items.sort_by! {|item| item[:date] }
+        results << { video: video, items: items }
+      end
+
+
+      render json: { date: span, items: results, format: 'single' }.to_json
+    end
+  end
+
+  private
+
+  def set_params(where = "")
+    {
+        account_id: params[:account_id],
+        client_id: params[:client_id],
+        client_secret: params[:client_secret],
+        site: params[:site],
+        dimensions: params[:dimensions],
+        fields: params[:fields],
+        format: params[:format],
+        where: where,
+        start_date: params[:start_date],
+        end_date: params[:end_date]
+    }
+  end
+
+  def set_items(id, items)
+    {
+        video_id: id,
+        items: items.map { |item| item.except!('video') }
+    }
   end
 end

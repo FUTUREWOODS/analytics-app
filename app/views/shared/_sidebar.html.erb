@@ -28,19 +28,33 @@
   </ul>
 </div>
 <%= select_tag 'site', options_for_select({'analytics API': 'https://analytics.api.brightcove.com/v1'}), class: 'form-control mb-2' %>
+<!--<div class="mb-2">-->
+<!--  <div class="alert alert-warning">-->
+<!--    現在グラフが有効なのは date のみ-->
+<!--  </div>-->
+  <%# fields = %w[account browser_type city country date date_hour destination_domain destination_path device_os device_manufacturer device_type live_stream player referrer_domain region search_terms social_platform source_type video] %>
+  <%# fields.each.with_index do |field, index| %>
+<!--    <div class="form-check">-->
+      <%#= check_box_tag 'dimensions[]', field, false, id: "field_#{index}", class: 'form-check-input' %>
+<!--      <label class="form-check-label" for="<%#= "field_#{index}" %>">-->
+        <%#= field %>
+<!--      </label>-->
+<!--    </div>-->
+  <%# end %>
+<!--</div>-->
 <div class="mb-2">
-  <div class="alert alert-warning">
-    現在グラフが有効なのは date のみ
-  </div>
-  <% fields = %w[account browser_type city country date date_hour destination_domain destination_path device_os device_manufacturer device_type live_stream player referrer_domain region search_terms social_platform source_type video] %>
-  <% fields.each.with_index do |field, index| %>
-    <div class="form-check">
-      <%= check_box_tag 'dimensions[]', field, false, id: "field_#{index}", class: 'form-check-input' %>
-      <label class="form-check-label" for="<%= "field_#{index}" %>">
-        <%= field %>
-      </label>
+  <% types = {'全動画視聴回数': 'all', '個別動画視聴回数(5件)': 'single'} %>
+  <%= select_tag 'format', options_for_select(types), class: 'form-control mb-2' %>
+</div>
+<div class="mb-2">
+  <div class="form-row">
+    <div class="col">
+      start: <%= date_field_tag 'start_date', Date.today - 30, class: 'form-control' %>
     </div>
-  <% end %>
+    <div class="col">
+      end: <%= date_field_tag 'end_date', Date.today, class: 'form-control' %>
+    </div>
+  </div>
 </div>
   <%= form.submit '送信', class: 'btn btn-primary' %>
 <% end %>
